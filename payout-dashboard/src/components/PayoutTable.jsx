@@ -8,6 +8,10 @@ function PayoutTable({
   data,
   selected,
   setSelected,
+  onApprove = () => {},
+  onReject = () => {},
+  onPending = () => {},
+  showActions = true,
 }) {
   const allSelected =
     data.length > 0 &&
@@ -85,6 +89,7 @@ function PayoutTable({
               <th>Charges</th>
               <th>Net Pay</th>
               <th>Status</th>
+              {showActions && <th>Actions</th>}
             </tr>
           </thead>
 
@@ -193,6 +198,35 @@ function PayoutTable({
                       {status}
                     </span>
                   </td>
+
+                  {showActions && (
+                    <td>
+                      <div className="row-actions">
+                        <button
+                          type="button"
+                          className="secondary-btn small"
+                          onClick={() => onApprove(item.requestNo)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary-btn small"
+                          onClick={() => onPending(item.requestNo)}
+                          style={{ marginLeft: 6 }}
+                        >
+                          Pending
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary-btn small"
+                          onClick={() => onReject(item.requestNo)}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </td>
+                  )}
 
                 </tr>
               );

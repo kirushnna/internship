@@ -11,6 +11,7 @@ function Navbar({
   onMenuClick,
   darkMode,
   setDarkMode,
+  activeSection,
 }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -67,9 +68,49 @@ function Navbar({
       </button>
 
       <div className="breadcrumb">
-        <span>Operations</span>
+        <span>{
+          activeSection === "dashboard"
+            ? "Overview"
+            : activeSection === "members"
+            ? "Members"
+            : activeSection === "instant"
+            ? "Payouts"
+            : activeSection === "history"
+            ? "Payouts"
+            : activeSection === "deposit"
+            ? "Operations"
+            : activeSection === "activation"
+            ? "Operations"
+            : activeSection === "kyc"
+            ? "Operations"
+            : activeSection === "settings"
+            ? "System"
+            : activeSection === "regular"
+            ? "Operations"
+            : "Payouts"
+        }</span>
         <b>/</b>
-        <strong>Regular Payout</strong>
+        <strong>{
+          activeSection === "dashboard"
+            ? "Dashboard"
+            : activeSection === "members"
+            ? "Member List"
+            : activeSection === "instant"
+            ? "Instant Payout"
+            : activeSection === "history"
+            ? "Payout History"
+            : activeSection === "deposit"
+            ? "Deposit Management"
+            : activeSection === "activation"
+            ? "Activation Details"
+            : activeSection === "kyc"
+            ? "KYC Documents"
+            : activeSection === "settings"
+            ? "Settings"
+            : activeSection === "regular"
+            ? "Regular Payout"
+            : "Regular Payout"
+        }</strong>
       </div>
 
       <div className="navbar-actions">

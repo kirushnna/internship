@@ -40,15 +40,19 @@ function Sidebar({ open, onClose, activeSection, onSectionChange }) {
       <nav>
         <div className="nav-title">OVERVIEW</div>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link payout-link ${activeSection === "dashboard" ? "active" : ""}`}
+          onClick={() => onSectionChange("dashboard")}
+          type="button"
+        >
           <LayoutDashboard size={18} />
           Dashboard
-        </a>
+        </button>
 
         <div className="nav-title">MEMBERS</div>
 
         <button
-          className={`nav-link ${activeSection === "members" ? "active" : ""}`}
+          className={`nav-link payout-link ${activeSection === "members" ? "active" : ""}`}
           onClick={() => onSectionChange("members")}
           type="button"
         >
@@ -59,7 +63,7 @@ function Sidebar({ open, onClose, activeSection, onSectionChange }) {
         <div className="nav-title">PAYOUTS</div>
 
         <button
-          className={`nav-link ${activeSection === "instant" ? "active" : ""}`}
+          className={`nav-link payout-link ${activeSection === "instant" ? "active" : ""}`}
           onClick={() => onSectionChange("instant")}
           type="button"
         >
@@ -68,7 +72,7 @@ function Sidebar({ open, onClose, activeSection, onSectionChange }) {
         </button>
 
         <button
-          className={`nav-link ${activeSection === "regular" ? "active" : ""}`}
+          className={`nav-link payout-link ${activeSection === "regular" ? "active" : ""}`}
           onClick={() => onSectionChange("regular")}
           type="button"
         >
@@ -77,7 +81,7 @@ function Sidebar({ open, onClose, activeSection, onSectionChange }) {
         </button>
 
         <button
-          className={`nav-link ${activeSection === "history" ? "active" : ""}`}
+          className={`nav-link payout-link ${activeSection === "history" ? "active" : ""}`}
           onClick={() => onSectionChange("history")}
           type="button"
         >
@@ -87,27 +91,43 @@ function Sidebar({ open, onClose, activeSection, onSectionChange }) {
 
         <div className="nav-title">OPERATIONS</div>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link payout-link ${activeSection === "deposit" ? "active" : ""}`}
+          onClick={() => onSectionChange("deposit")}
+          type="button"
+        >
           <FileText size={18} />
           Deposit Management
-        </a>
+        </button>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link payout-link ${activeSection === "activation" ? "active" : ""}`}
+          onClick={() => onSectionChange("activation")}
+          type="button"
+        >
           <Activity size={18} />
           Activation Details
-        </a>
+        </button>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link payout-link ${activeSection === "kyc" ? "active" : ""}`}
+          onClick={() => onSectionChange("kyc")}
+          type="button"
+        >
           <ShieldCheck size={18} />
           KYC Documents
-        </a>
+        </button>
 
         <div className="nav-title">SYSTEM</div>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link payout-link ${activeSection === "settings" ? "active" : ""}`}
+          onClick={() => onSectionChange("settings")}
+          type="button"
+        >
           <Settings size={18} />
           Settings
-        </a>
+        </button>
       </nav>
 
       <div className="sidebar-footer">

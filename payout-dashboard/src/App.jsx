@@ -6,6 +6,7 @@ import {
   Users,
   Clock3,
   CircleDollarSign,
+  XCircle,
   Search,
   Download,
   Check,
@@ -40,21 +41,41 @@ function App() {
     useState("regular");
 
   const pageTitle =
-    activeSection === "members"
+    activeSection === "dashboard"
+      ? "Operations Dashboard"
+      : activeSection === "members"
       ? "Member List"
       : activeSection === "instant"
       ? "Instant Payout"
       : activeSection === "history"
       ? "Payout History"
+      : activeSection === "deposit"
+      ? "Deposit Management"
+      : activeSection === "activation"
+      ? "Activation Details"
+      : activeSection === "kyc"
+      ? "KYC Documents"
+      : activeSection === "settings"
+      ? "Platform Settings"
       : "Regular Payouts";
 
   const pageDescription =
-    activeSection === "members"
+    activeSection === "dashboard"
+      ? "Get a quick overview of payout operations and workflows."
+      : activeSection === "members"
       ? "Browse and manage registered members."
       : activeSection === "instant"
       ? "Send an immediate payout to a registered member."
       : activeSection === "history"
       ? "Review all payout activity and completed payout requests."
+      : activeSection === "deposit"
+      ? "Manage incoming deposits and approve or reject them."
+      : activeSection === "activation"
+      ? "Review activation requests and complete member onboarding."
+      : activeSection === "kyc"
+      ? "Approve or reject KYC documents for users."
+      : activeSection === "settings"
+      ? "Configure application behavior and notification preferences."
       : "Monitor, review and manage member payout requests.";
 
   const [instantMemberId, setInstantMemberId] =
@@ -77,6 +98,66 @@ function App() {
 
   const [selected, setSelected] =
     useState([]);
+
+  const [depositRequests, setDepositRequests] = useState([
+    {
+      id: "D-1001",
+      userId: "M184396275",
+      amount: 4200,
+      method: "UPI",
+      status: "Pending",
+    },
+    {
+      id: "D-1002",
+      userId: "M906453",
+      amount: 1200,
+      method: "Netbanking",
+      status: "Pending",
+    },
+    {
+      id: "D-1003",
+      userId: "M687201",
+      amount: 6500,
+      method: "Wallet",
+      status: "Approved",
+    },
+  ]);
+
+  const [activationRequests, setActivationRequests] = useState([
+    {
+      id: "A-2101",
+      userId: "M781602",
+      plan: "Premium",
+      status: "Pending",
+    },
+    {
+      id: "A-2102",
+      userId: "M298671",
+      plan: "Standard",
+      status: "Pending",
+    },
+  ]);
+
+  const [kycDocuments, setKycDocuments] = useState([
+    {
+      id: "K-3101",
+      userId: "M106798",
+      name: "Sathilekshmi S",
+      status: "Pending",
+    },
+    {
+      id: "K-3102",
+      userId: "M419638257",
+      name: "Arika Seshagirirao",
+      status: "Approved",
+    },
+  ]);
+
+  const [platformSettings, setPlatformSettings] = useState({
+    notifications: true,
+    autoApprovePayouts: false,
+    dailyReports: true,
+  });
 
   const [page, setPage] =
     useState(1);
@@ -132,6 +213,37 @@ function App() {
       return matchesSearch && matchesStatus;
     });
   }, [search, statusFilter, payoutDataWithStatus]);
+
+  const updateDepositStatus = (id, newStatus) => {
+    setDepositRequests((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, status: newStatus } : item
+      )
+    );
+  };
+
+  const updateActivationStatus = (id, newStatus) => {
+    setActivationRequests((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, status: newStatus } : item
+      )
+    );
+  };
+
+  const updateKycStatus = (id, newStatus) => {
+    setKycDocuments((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, status: newStatus } : item
+      )
+    );
+  };
+
+  const toggleSetting = (key) => {
+    setPlatformSettings((settings) => ({
+      ...settings,
+      [key]: !settings[key],
+    }));
+  };
 
   const totalPages = Math.ceil(
     filteredData.length / rowsPerPage
@@ -204,6 +316,48 @@ function App() {
     setSelected([]);
   };
 
+  const approveRequest = (requestNo) => {
+    setPayoutDataWithStatus((records) =>
+      records.map((record) =>
+        record.requestNo === requestNo
+          ? { ...record, status: "Approved" }
+          : record
+      )
+    );
+
+    setSelected((current) =>
+      current.filter((id) => id !== requestNo)
+    );
+  };
+
+  const rejectRequest = (requestNo) => {
+    setPayoutDataWithStatus((records) =>
+      records.map((record) =>
+        record.requestNo === requestNo
+          ? { ...record, status: "Rejected" }
+          : record
+      )
+    );
+
+    setSelected((current) =>
+      current.filter((id) => id !== requestNo)
+    );
+  };
+
+  const pendingRequest = (requestNo) => {
+    setPayoutDataWithStatus((records) =>
+      records.map((record) =>
+        record.requestNo === requestNo
+          ? { ...record, status: "Pending" }
+          : record
+      )
+    );
+
+    setSelected((current) =>
+      current.filter((id) => id !== requestNo)
+    );
+  };
+
   const clearSelection = () => setSelected([]);
 
   return (
@@ -233,6 +387,7 @@ function App() {
           }
           darkMode={darkMode}
           setDarkMode={setDarkMode}
+          activeSection={activeSection}
         />
 
         <main className="dashboard">
@@ -306,6 +461,82 @@ function App() {
               <section className="charts-grid">
                 <PayoutChart />
                 <FeeBreakdown />
+              </section>
+
+              {/* DASHBOARD SUMMARY */}
+              <section className="table-section">
+                <div className="toolbar">
+                  <div className="toolbar-title">
+                    <h2>Live Operations Summary</h2>
+                    <span>Recent requests from payouts, deposits, activations, and KYC.</span>
+                  </div>
+                </div>
+
+                <div className="table-card">
+                  <div className="table-heading">
+                    <div>
+                      <h3>Recent Activity</h3>
+                      <p>Latest items across payout and operations workflows.</p>
+                    </div>
+                    <span className="request-count">
+                      {Math.min(8, payoutDataWithStatus.length + depositRequests.length + activationRequests.length + kycDocuments.length)} items
+                    </span>
+                  </div>
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Type</th>
+                          <th>Request</th>
+                          <th>User</th>
+                          <th>Amount</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payoutDataWithStatus.slice(0, 4).map((item) => (
+                          <tr key={item.requestNo}>
+                            <td>Payout</td>
+                            <td>{item.requestNo}</td>
+                            <td>{item.userId}</td>
+                            <td>₹{item.withdraw.toLocaleString()}</td>
+                            <td>
+                              <span className={`status ${item.status.toLowerCase()}`}>
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                        {depositRequests.slice(0, 2).map((item) => (
+                          <tr key={item.id}>
+                            <td>Deposit</td>
+                            <td>{item.id}</td>
+                            <td>{item.userId}</td>
+                            <td>₹{item.amount.toLocaleString()}</td>
+                            <td>
+                              <span className={`status ${item.status.toLowerCase()}`}>
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                        {activationRequests.slice(0, 2).map((item) => (
+                          <tr key={item.id}>
+                            <td>Activation</td>
+                            <td>{item.id}</td>
+                            <td>{item.userId}</td>
+                            <td>—</td>
+                            <td>
+                              <span className={`status ${item.status.toLowerCase()}`}>
+                                {item.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </section>
 
               {/* TABLE CONTROLS */}
@@ -407,6 +638,9 @@ function App() {
             data={currentData}
             selected={selected}
             setSelected={setSelected}
+            onApprove={approveRequest}
+            onReject={rejectRequest}
+            onPending={pendingRequest}
           />
 
           {/* PAGINATION */}
@@ -480,6 +714,259 @@ function App() {
 
         </section>
             </>
+          ) : activeSection === "dashboard" ? (
+            <section className="table-section">
+              <div className="toolbar">
+                <div className="toolbar-title">
+                  <h2>Operations Dashboard</h2>
+                  <span>View key metrics and take quick actions.</span>
+                </div>
+              </div>
+
+              <section className="stats-grid">
+                <StatCard
+                  title="Pending Payouts"
+                  value={payoutDataWithStatus.filter((item) => item.status === "Pending").length}
+                  subtitle="Requests waiting for review"
+                  icon={Clock3}
+                  trend="-"
+                />
+                <StatCard
+                  title="Approved"
+                  value={payoutDataWithStatus.filter((item) => item.status === "Approved").length}
+                  subtitle="Payouts cleared"
+                  icon={Check}
+                  trend="+"
+                />
+                <StatCard
+                  title="Rejected"
+                  value={payoutDataWithStatus.filter((item) => item.status === "Rejected").length}
+                  subtitle="Failed or held payouts"
+                  icon={XCircle}
+                  trend="-"
+                />
+                <StatCard
+                  title="Deposits Pending"
+                  value={depositRequests.filter((item) => item.status === "Pending").length}
+                  subtitle="Awaiting approval"
+                  icon={Wallet}
+                  trend="-"
+                />
+              </section>
+            </section>
+          ) : activeSection === "deposit" ? (
+            <section className="table-section">
+              <div className="toolbar">
+                <div className="toolbar-title">
+                  <h2>Deposit Management</h2>
+                  <span>Approve or reject pending deposit requests.</span>
+                </div>
+              </div>
+
+              <div className="table-card">
+                <div className="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Request</th>
+                        <th>User ID</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {depositRequests.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.userId}</td>
+                          <td>₹{item.amount.toLocaleString()}</td>
+                          <td>{item.method}</td>
+                          <td>
+                            <span className={`status ${item.status.toLowerCase()}`}>
+                              {item.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="row-actions">
+                              <button
+                                type="button"
+                                className="secondary-btn small"
+                                onClick={() => updateDepositStatus(item.id, "Approved")}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                type="button"
+                                className="secondary-btn small"
+                                onClick={() => updateDepositStatus(item.id, "Rejected")}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          ) : activeSection === "activation" ? (
+            <section className="table-section">
+              <div className="toolbar">
+                <div className="toolbar-title">
+                  <h2>Activation Details</h2>
+                  <span>Process member activation requests.</span>
+                </div>
+              </div>
+
+              <div className="table-card">
+                <div className="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Request</th>
+                        <th>User ID</th>
+                        <th>Plan</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activationRequests.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.userId}</td>
+                          <td>{item.plan}</td>
+                          <td>
+                            <span className={`status ${item.status.toLowerCase()}`}>
+                              {item.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="row-actions">
+                              <button
+                                type="button"
+                                className="secondary-btn small"
+                                onClick={() => updateActivationStatus(item.id, "Approved")}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                type="button"
+                                className="secondary-btn small"
+                                onClick={() => updateActivationStatus(item.id, "Rejected")}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          ) : activeSection === "kyc" ? (
+            <section className="table-section">
+              <div className="toolbar">
+                <div className="toolbar-title">
+                  <h2>KYC Documents</h2>
+                  <span>Review and approve document submissions.</span>
+                </div>
+              </div>
+
+              <div className="table-card">
+                <div className="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {kycDocuments.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.name}</td>
+                          <td>
+                            <span className={`status ${item.status.toLowerCase()}`}>
+                              {item.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="row-actions">
+                              <button
+                                type="button"
+                                className="secondary-btn small"
+                                onClick={() => updateKycStatus(item.id, "Approved")}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                type="button"
+                                className="secondary-btn small"
+                                onClick={() => updateKycStatus(item.id, "Rejected")}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          ) : activeSection === "settings" ? (
+            <section className="table-section">
+              <div className="toolbar">
+                <div className="toolbar-title">
+                  <h2>Platform Settings</h2>
+                  <span>Toggle key operational options.</span>
+                </div>
+              </div>
+
+              <div className="instant-form-card">
+                <div className="instant-form-row">
+                  <label>Notifications</label>
+                  <button
+                    className="secondary-btn"
+                    type="button"
+                    onClick={() => toggleSetting("notifications")}
+                  >
+                    {platformSettings.notifications ? "Enabled" : "Disabled"}
+                  </button>
+                </div>
+                <div className="instant-form-row">
+                  <label>Auto-Approve Payouts</label>
+                  <button
+                    className="secondary-btn"
+                    type="button"
+                    onClick={() => toggleSetting("autoApprovePayouts")}
+                  >
+                    {platformSettings.autoApprovePayouts ? "Enabled" : "Disabled"}
+                  </button>
+                </div>
+                <div className="instant-form-row">
+                  <label>Daily Reports</label>
+                  <button
+                    className="secondary-btn"
+                    type="button"
+                    onClick={() => toggleSetting("dailyReports")}
+                  >
+                    {platformSettings.dailyReports ? "Enabled" : "Disabled"}
+                  </button>
+                </div>
+              </div>
+            </section>
           ) : activeSection === "members" ? (
             <MemberList data={payoutData} />
           ) : activeSection === "instant" ? (
@@ -608,9 +1095,13 @@ function App() {
               </div>
 
               <PayoutTable
-                data={currentData}
+                data={filteredData}
                 selected={selected}
                 setSelected={setSelected}
+                onApprove={approveRequest}
+                onReject={rejectRequest}
+                onPending={pendingRequest}
+                showActions={false}
               />
             </section>
           )}
