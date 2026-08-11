@@ -17,18 +17,49 @@ export function exportToCSV(data, filename = "payout-report.csv") {
     "Net Payout",
   ];
 
-  const rows = data.map((item, index) => [
-    index + 1,
-    item.requestNo,
-    item.date,
-    item.name,
-    item.userId,
-    item.withdrawAmount,
-    item.serviceCharge,
-    item.tds,
-    item.rePurchaseWallet,
-    item.netPayout,
-  ]);
+  const formatDate = (value) => {
+    if (!value) return "";
+
+    const dateValue =
+      typeof value === "string"
+        ? new Date(value.replace(/\s+/g, "T"))
+        : new Date(value);
+
+    if (Number.isNaN(dateValue.getTime())) {
+      return String(value);
+    }
+
+    return dateValue.toLocaleString("en-IN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  const rows = data.map((item, index) => {
+    const netPayout =
+      item.netpay ??
+      item.netPayout ??
+      (item.withdraw != null
+        ? item.withdraw - (item.service || 0) - (item.tds || 0) - (item.wallet || 0)
+        : "");
+
+    return [
+      item.sno ?? index + 1,
+      item.requestNo ?? "",
+      formatDate(item.date ?? item.createdAt ?? item.timestamp),
+      item.name ?? "",
+      item.userId ?? "",
+      item.withdraw ?? "",
+      item.service ?? "",
+      item.tds ?? "",
+      item.wallet ?? "",
+      netPayout,
+    ];
+  });
 
   const csvContent = [
     headers.join(","),

@@ -92,8 +92,7 @@ function PayoutTable({
 
             {data.map((item, index) => {
 
-              const status =
-                getStatus(index);
+              const status = item.status ?? getStatus(index);
 
               return (
                 <tr key={item.requestNo}>

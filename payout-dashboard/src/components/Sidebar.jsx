@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 
-function Sidebar({ open, onClose }) {
+function Sidebar({ open, onClose, activeSection, onSectionChange }) {
   return (
     <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
       <div className="brand">
@@ -47,27 +47,43 @@ function Sidebar({ open, onClose }) {
 
         <div className="nav-title">MEMBERS</div>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link ${activeSection === "members" ? "active" : ""}`}
+          onClick={() => onSectionChange("members")}
+          type="button"
+        >
           <Users size={18} />
           Member List
-        </a>
+        </button>
 
         <div className="nav-title">PAYOUTS</div>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link ${activeSection === "instant" ? "active" : ""}`}
+          onClick={() => onSectionChange("instant")}
+          type="button"
+        >
           <Wallet size={18} />
           Instant Payout
-        </a>
+        </button>
 
-        <a className="nav-link active">
+        <button
+          className={`nav-link ${activeSection === "regular" ? "active" : ""}`}
+          onClick={() => onSectionChange("regular")}
+          type="button"
+        >
           <CircleDollarSign size={18} />
           Regular Payout
-        </a>
+        </button>
 
-        <a className="nav-link">
+        <button
+          className={`nav-link ${activeSection === "history" ? "active" : ""}`}
+          onClick={() => onSectionChange("history")}
+          type="button"
+        >
           <Clock3 size={18} />
           Payout History
-        </a>
+        </button>
 
         <div className="nav-title">OPERATIONS</div>
 
@@ -87,11 +103,6 @@ function Sidebar({ open, onClose }) {
         </a>
 
         <div className="nav-title">SYSTEM</div>
-
-        <a className="nav-link">
-          <Bell size={18} />
-          Notifications
-        </a>
 
         <a className="nav-link">
           <Settings size={18} />
